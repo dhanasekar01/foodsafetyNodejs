@@ -87,10 +87,22 @@ app.localization.registerView('subtask');
     }
     ];
 
-    function createSubtask(data,type) {
-        var subdata = {
-            data: data,
-            type: type
+    var devicedata = { device: "Refrigerator 1", temp: "-4°C", hum: "75%", time: "2017-02-16 12:30" };
+
+    function createSubtask(data, type) {
+        var subdata = {};
+       
+        if (type == "iot") {
+            subdata = {
+                data: data,
+                type: type,
+                device : devicedata
+            }
+        } else {
+            subdata = {
+                data: data,
+                type: type
+            }
         }
         var template = kendo.template($("#subtasktemplate").html());
         var result = template(subdata);
