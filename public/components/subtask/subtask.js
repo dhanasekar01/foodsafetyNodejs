@@ -99,9 +99,18 @@ app.localization.registerView('subtask');
                 device : devicedata
             }
         } else {
+            var currentdate = new Date();
+            var datetime =  currentdate.getDate() + "/"
+                            + (currentdate.getMonth() + 1) + "/"
+                            + currentdate.getFullYear() + " @ "
+                            + currentdate.getHours() + ":"
+                            + currentdate.getMinutes() + ":"
+                            + currentdate.getSeconds();
+            devicedata = { device: "TMD 1", temp: "-4°C", hum: "75%", time: datetime };
             subdata = {
                 data: data,
-                type: type
+                type: type,
+                device: devicedata
             }
         }
         var template = kendo.template($("#subtasktemplate").html());

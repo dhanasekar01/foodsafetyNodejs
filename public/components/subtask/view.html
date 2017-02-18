@@ -7,7 +7,7 @@
     </header>
 
     <div class="content">
-        
+
         <div class="content-inner">
             <div class="container">
                 <div class="row">
@@ -41,8 +41,21 @@
         createGauges();
         setTimeout(function () {
             $("#el-loading-3").addClass("el-loading-done");
+            setTimeout(function () {
+                $("#gauge").data("kendoLinearGauge").value(-7);
+                $("#gauge-value").val(-7);
+            }, 2000);
         }, 3000);
-        
+
+    }
+
+    function submit() {
+        kendo.confirm("Checklist Submitted. Do you want to Sync Now?").then(function () {
+            app.showNotification("Checklist sent to Sync queue.");
+        }, function () {
+            app.showNotification("Sync can be done at checklist page also.");
+        });
+        $("li.k-button").css('width', '49%');
     }
 
     function createGauges() {
@@ -50,7 +63,7 @@
 
         $("#gauge").kendoLinearGauge({
             pointer: {
-                value: -6
+                value: value
             },
 
             scale: {
@@ -76,6 +89,9 @@
                 ]
             }
         });
+
+
+
     }
 
     function createSparklines(e) {
@@ -116,7 +132,7 @@
                 plotBands: [
                     {
                         from: 0, to: 3, color: "#787878", opacity: 0.15
-                    },{
+                    }, {
                         from: 3, to: 7, color: "#787878", opacity: 0.3
                     }, {
                         from: 7, to: 22, color: "#787878", opacity: 0.15
@@ -132,14 +148,14 @@
 
 </script>
 
-<script  type="text/x-kendoe-template" id="subtasktemplate">
+<script type="text/x-kendoe-template" id="subtasktemplate">
     <div class="card card-blue">
         <div class="card-main">
             <div class="card-inner">
                 <h2 class="content-sub-heading"><b>${data.name}</b></h2>
                 <p>
                     # if(type == "iot") { #
-                    <a href="javascript:void(0)" onclick="enableiot(this);" class="btn btn-lg" >
+                    <a href="javascript:void(0)" onclick="enableiot(this);" class="btn btn-lg">
                         <span class="avatar-sm avatar avatar-transparent avatar-inline">
                             <img src="components/subtask/thermometer.png" />
                         </span>&nbsp;<span class="text-blue">Read Temp</span>
@@ -191,11 +207,16 @@
                                                 </h4>
                                                 <table class="history">
                                                     <tr>
-                                                        <td colspan="2">Current Temperture</td>
+                                                        <td>&nbsp;</td>
+                                                        <td>Current Temperture</td>
                                                     </tr>
                                                     <tr>
                                                         <td class="spark"><span id="temp-log"></span></td>
                                                         <td class="value"> ${device.temp}<span></span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>&nbsp;</td>
+                                                        <td>Current Humidity</td>
                                                     </tr>
                                                     <tr>
                                                         <td class="spark"><span id="hum-log"></span></td>
@@ -205,7 +226,7 @@
                                             </div>
                                             <div class="temperature">
                                                 <h4>
-                                                  Temperature control
+                                                    Temperature control
                                                 </h4>
                                                 <div class="stats">
                                                     <span id="temp-range"></span>
@@ -214,11 +235,32 @@
                                             <p>
                                                 <span class="icon icon-alarm"></span> <b>TimeStamp:</b>  ${device.time} <br />
                                             </p>
-                                            <div>
-                                                <a class="btn btn-blue waves-button" href="javascript:void(0)"><span class="icon icon-check text-white"></span>&nbsp;<span class="text-white">Finalize</span></a>
-                                                <a class="btn waves-button" href="javascript:void(0)"><span class="text-blue">Correct</span></a>
+                                            <div class="form-group form-group-blue">
+                                                <div class="row">
+                                                    <div class="col-lg-2 col-md-3 col-sm-4">
+                                                        <label class="form-label" for="text-blue">Temperature Reading</label>
+                                                    </div>
+                                                    <div class="col-lg-4 col-md-6 col-sm-8">
+                                                        <input type="text" class="form-control" id="iot-value" style="width:50%;" value="-4" />
+                                                        <span class="form-help form-help-msg text-blue">Overriding the Temperature is enabled</span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <br />
+                                            <div class="form-group form-group-icon">
+                                                <div class="row">
+                                                    <div class="col-lg-6 col-sm-8">
+                                                        <div class="media">
+                                                            <div class="media-object pull-left">
+                                                                <label class="form-icon-label" for="input-icon-comment"><span class="access-hide">Comments</span><span class="icon icon-comment"></span></label>
+                                                            </div>
+                                                            <div class="media-inner">
+                                                                <textarea class="form-control textarea-autosize" id="input-icon-comment" placeholder="Comments" rows="1"></textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -226,18 +268,72 @@
                         </div>
                     </div>
                     #} else {#
-                        <div id="gauge-container">
-                            <div id="gauge"></div>
+
+                    <div class="card-wrap">
+                        <div class="row">
+                            <div class="col-lg-12 col-sm-12">
+                                <div class="card">
+                                    <div class="card-main">
+                                        <div class="card-inner">
+                                            <h2 class="content-sub-heading">TMD Device - ${device.device}</h2>
+                                            <div id="gauge-container">
+                                                <div id="gauge"></div>
+                                            </div>
+                                            <br />
+                                            <p>
+                                                <span class="icon icon-alarm"></span> <b>TimeStamp:</b>  ${device.time} <br />
+                                            </p>
+                                            <div class="form-group form-group-blue">
+                                                <div class="row">
+                                                    <div class="col-lg-2 col-md-3 col-sm-4">
+                                                        <label class="form-label" for="text-blue">Temperature Reading</label>
+                                                    </div>
+                                                    <div class="col-lg-4 col-md-6 col-sm-8">
+                                                        <input type="text" class="form-control" id="gauge-value" style="width:50%;" value="-4" />
+                                                        <span class="form-help form-help-msg text-blue">Overriding the Temperature is enabled</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group form-group-icon">
+                                                <div class="row">
+                                                    <div class="col-lg-6 col-sm-8">
+                                                        <div class="media">
+                                                            <div class="media-object pull-left">
+                                                                <label class="form-icon-label" for="input-icon-comment"><span class="access-hide">Comments</span><span class="icon icon-comment"></span></label>
+                                                            </div>
+                                                            <div class="media-inner">
+                                                                <textarea class="form-control textarea-autosize" id="input-icon-comment" placeholder="Comments" rows="1"></textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br />
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+
+                
                     #}#
                 </div>
-                <br/>
+                <br />
+
                 <p>
                     <b>Critcal Limit : <span style="color:red">${data.limit}</span></b><br>
                     <table class="table-hover table">
                         <tr><th>Corrective Action</th></tr>
                         #for(var i =0 ;i < data.action.length ; i++){#
-                            <tr><td>#=data.action[i]#</td></tr>
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="km-checkbox" id="action-${i}" />
+                                <label class="km-checkbox-label" style="font-size:1em;color:black" for="action-${i}">&nbsp; #=data.action[i]#</label>
+                            </td>
+                        </tr>
                         #}#
                     </table>
                 </p>
@@ -245,7 +341,7 @@
             <div class="card-action">
                 <ul class="nav nav-list pull-left">
                     <li>
-                        <a href="javascript:void(0)"><span class="icon icon-check text-blue"></span>&nbsp;<span class="text-blue">OK</span></a>
+                        <a class="btn btn-sm btn-blue waves-button" onclick="submit()" href="javascript:void(0)"><span class="icon icon-check text-white"></span>&nbsp;<span class="text-white">Submit</span></a>
                     </li>
                 </ul>
             </div>
@@ -318,7 +414,8 @@
         width: 100%;
         line-height: 30px;
     }
-</style><style>
+</style>
+<style>
     .temperature, .conditioner {
         margin: 0;
         padding: 30px 0 0 0;
